@@ -1,12 +1,52 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from "react";
+import { WelcomeScreen } from "@/components/WelcomeScreen";
+import { QuestionForm } from "@/components/QuestionForm";
+import { ResultsScreen } from "@/components/ResultsScreen";
+
+type Screen = 'welcome' | 'form' | 'results';
+
+interface FormData {
+  stuckOn: string;
+  barriers: string[];
+  values: string[];
+}
 
 const Index = () => {
+  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  const [formData, setFormData] = useState<FormData | null>(null);
+
+  const handleStart = () => {
+    setCurrentScreen('form');
+  };
+
+  const handleFormSubmit = (data: FormData) => {
+    setFormData(data);
+    setCurrentScreen('results');
+  };
+
+  const handleReset = () => {
+    setFormData(null);
+    setCurrentScreen('welcome');
+  };
+
+  const handleBackToWelcome = () => {
+    setCurrentScreen('welcome');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      {currentScreen === 'welcome' && (
+        <WelcomeScreen onStart={handleStart} />
+      )}
+      
+      {currentScreen === 'form' && (
+        <QuestionForm onSubmit={handleFormSubmit} onBack={handleBackToWelcome} />
+      )}
+      
+      {currentScreen === 'results' && formData && (
+        <ResultsScreen formData={formData} onReset={handleReset} />
+      )}
     </div>
   );
 };
